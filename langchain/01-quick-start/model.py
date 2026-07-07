@@ -247,3 +247,55 @@ class CustomChatDeepSeekV4Flash(ChatOpenAI):
             api_key=SecretStr(OPENAI_API_KEY),
             base_url=OPENAI_BASE_URL,
         )
+
+
+class CustomRateLimiterDeepSeekV3(CustomRateLimiter):
+    def __init__(self) -> None:
+        # DeepSeek V3.2 rate limits
+        super().__init__(
+            peak_burst_size=700 / 60,
+            committed_burst_size=700 / 60,
+            check_every_n_seconds=0.1
+        )
+
+class CustomChatDeepSeekV3(ChatOpenAI):
+    def __init__(self) -> None:
+        OPENAI_MODEL = "deepseek-v3.2"
+        OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+        OPENAI_BASE_URL = "https://api.modelarts-maas.com/openai/v1"
+
+        if not OPENAI_API_KEY:
+            raise ValueError("Missing OPENAI_API_KEY configuration.")
+
+        super().__init__(
+            rate_limiter=CustomRateLimiterDeepSeekV3(),
+            model=OPENAI_MODEL,
+            api_key=SecretStr(OPENAI_API_KEY),
+            base_url=OPENAI_BASE_URL,
+        )
+
+
+class CustomRateLimiterOpenPanguFlash(CustomRateLimiter):
+    def __init__(self) -> None:
+        # OpenPangu Flash rate limits
+        super().__init__(
+            peak_burst_size=100 / 60,
+            committed_burst_size=100 / 60,
+            check_every_n_seconds=0.1
+        )
+
+class CustomChatOpenPanguFlash(ChatOpenAI):
+    def __init__(self) -> None:
+        OPENAI_MODEL = "openpangu-2.0-flash"
+        OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+        OPENAI_BASE_URL = "https://api.modelarts-maas.com/openai/v1"
+
+        if not OPENAI_API_KEY:
+            raise ValueError("Missing OPENAI_API_KEY configuration.")
+
+        super().__init__(
+            rate_limiter=CustomRateLimiterOpenPanguFlash(),
+            model=OPENAI_MODEL,
+            api_key=SecretStr(OPENAI_API_KEY),
+            base_url=OPENAI_BASE_URL,
+        )
